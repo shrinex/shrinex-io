@@ -1,6 +1,6 @@
 name: shrinex_io
 description: A thin wrapper around dio.
-version: 0.0.1
+version: 0.0.1+1
 homepage: https://github.com/shrinex/shrinex-io
 
 environment:

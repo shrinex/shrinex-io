@@ -27,7 +27,7 @@ abstract class Service {
   }();
 }
 
-extension on Service {
+extension ReactiveX on Service {
   Stream<Map<String, dynamic>> observe(HttpRequest request) {
     final options = RequestOptions(
       path: request.path,
