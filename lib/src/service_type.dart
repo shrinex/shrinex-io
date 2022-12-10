@@ -16,10 +16,10 @@ abstract class Service {
 
   late final _restClient = () {
     var options = BaseOptions(
+      baseUrl: serverOptions.baseUrl,
       responseType: ResponseType.json,
       receiveDataWhenStatusError: true,
       contentType: Headers.jsonContentType,
-      baseUrl: serverOptions.baseUrl.toString(),
       receiveTimeout: serverOptions.readTimeout,
       connectTimeout: serverOptions.connectTimeout,
     );
@@ -37,7 +37,7 @@ extension ReactiveX on Service {
       queryParameters: request.queryParams,
       responseType: _restClient.options.responseType,
       contentType: _restClient.options.contentType,
-      baseUrl: request.baseUrl ?? _restClient.options.baseUrl.toString(),
+      baseUrl: request.baseUrl ?? _restClient.options.baseUrl,
       receiveTimeout: request.readTimeout ?? _restClient.options.receiveTimeout,
       connectTimeout:
           request.connectTimeout ?? _restClient.options.connectTimeout,
