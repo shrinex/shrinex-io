@@ -25,6 +25,8 @@ abstract class Service {
     );
     return Dio(options);
   }();
+
+  factory Service.using(ServerOptions serverOptions) => _Service(serverOptions);
 }
 
 extension ReactiveX on Service {
@@ -78,6 +80,15 @@ extension ReactiveX on Service {
         return Future.error(ErrorEnvelope.unknown);
     }
   }
+}
+
+class _Service with Service {
+  @override
+  final ServerOptions serverOptions;
+
+  _Service(
+    this.serverOptions,
+  );
 }
 
 const _missingResponseBody = ErrorEnvelope(12590, "Missing response body");

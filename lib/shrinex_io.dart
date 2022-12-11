@@ -11,4 +11,4 @@ export 'src/error_envelope.dart';
 export 'src/http_method.dart';
 export 'src/http_request.dart';
 export 'src/server_options.dart';
-export 'src/service_type.dart';
+export 'src/service.dart';

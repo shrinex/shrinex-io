@@ -9,7 +9,7 @@ import 'package:shrinex_core/shrinex_core.dart';
 
 enum Kind implements SelfDescribing, RawEnum<int> {
   dev(1, "开发环境"),
-  prod(2, "生成环境"),
+  prod(2, "生产环境"),
   local(3, "本地环境"),
   ;
 
