@@ -7,11 +7,17 @@
 
 import 'package:dio/dio.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shrinex_io/src/bearer_token.dart';
 import 'package:shrinex_io/src/error_envelope.dart';
 import 'package:shrinex_io/src/http_request.dart';
 import 'package:shrinex_io/src/server_options.dart';
 
+/// A type that knows how to fetch ShrineX data.
 abstract class Service {
+  /// Used to authenticate ShrineX api
+  BearerToken? get bearerToken;
+
+  /// The [ServerOptions] associated with this [Service]
   ServerOptions get serverOptions;
 
   late final _restClient = () {
@@ -26,10 +32,36 @@ abstract class Service {
     return Dio(options);
   }();
 
-  factory Service.using(ServerOptions serverOptions) => _Service(serverOptions);
+  /// Factory method that helps create [Service] instance
+  factory Service.using({
+    BearerToken? bearerToken,
+    required ServerOptions serverOptions,
+  }) =>
+      _Service(
+        bearerToken: bearerToken,
+        serverOptions: serverOptions,
+      );
+
+  /// Returns a new service with the Service token replaced
+  Service login(BearerToken bearerToken) {
+    return Service.using(
+      bearerToken: bearerToken,
+      serverOptions: serverOptions,
+    );
+  }
+
+  /// Returns a new service with the bearer token set to `null`
+  Service logout() {
+    return Service.using(
+      bearerToken: null,
+      serverOptions: serverOptions,
+    );
+  }
 }
 
+/// Reactive extension for [Service]
 extension ReactiveX on Service {
+  /// Entry point for making HTTP request, returns a cold but broadcast stream
   Stream<Map<String, dynamic>> observe(HttpRequest request) {
     final options = RequestOptions(
       path: request.path,
@@ -84,11 +116,15 @@ extension ReactiveX on Service {
 
 class _Service with Service {
   @override
+  final BearerToken? bearerToken;
+
+  @override
   final ServerOptions serverOptions;
 
-  _Service(
-    this.serverOptions,
-  );
+  _Service({
+    this.bearerToken,
+    required this.serverOptions,
+  });
 }
 
 const _missingResponseBody = ErrorEnvelope(12590, "Missing response body");

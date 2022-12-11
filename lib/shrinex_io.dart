@@ -7,6 +7,7 @@
 
 library shrinex_io;
 
+export 'src/bearer_token.dart';
 export 'src/error_envelope.dart';
 export 'src/http_method.dart';
 export 'src/http_request.dart';

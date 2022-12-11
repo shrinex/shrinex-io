@@ -7,6 +7,7 @@
 
 import 'package:shrinex_core/shrinex_core.dart';
 
+/// Represents environment kind
 enum Kind implements SelfDescribing, RawEnum<int> {
   dev(1, "开发环境"),
   prod(2, "生产环境"),
@@ -25,14 +26,18 @@ enum Kind implements SelfDescribing, RawEnum<int> {
   );
 }
 
-/// A type that knows the location of a ShrineX API.
+/// A type that knows the location of a ShrineX API
 abstract class ServerOptions {
+  /// Current environment kind
   Kind get kind;
 
+  /// Base url for HTTP request
   String get baseUrl;
 
+  /// How long should we receive response from server
   int get readTimeout;
 
+  /// How long should we connect to server
   int get connectTimeout;
 
   factory ServerOptions(

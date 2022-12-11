@@ -7,7 +7,7 @@
 
 import 'package:shrinex_core/shrinex_core.dart';
 
-/// dart enumeration of HTTP request methods.
+/// dart enumeration of HTTP request methods
 enum HttpMethod implements RawEnum<String> {
   get('GET'),
   head('HEAD'),
