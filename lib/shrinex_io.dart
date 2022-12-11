@@ -9,7 +9,10 @@ library shrinex_io;
 
 export 'src/bearer_token.dart';
 export 'src/error_envelope.dart';
+export 'src/http_message.dart';
 export 'src/http_method.dart';
 export 'src/http_request.dart';
+export 'src/http_response.dart';
 export 'src/server_options.dart';
 export 'src/service.dart';
+export 'src/types.dart';

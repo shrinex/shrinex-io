@@ -5,14 +5,9 @@
  * Home: http://anyoptional.com
  */
 
+import 'package:shrinex_io/src/http_message.dart';
 import 'package:shrinex_io/src/http_method.dart';
 import 'package:shrinex_io/src/server_options.dart';
-
-/// Defines common part for a client HTTP request
-mixin HttpMessage {
-  /// HTTP headers
-  Map<String, List<String>> get headers => {};
-}
 
 /// Encapsulates request body
 mixin HttpOutputMessage on HttpMessage {

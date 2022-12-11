@@ -5,7 +5,7 @@
  * Home: http://anyoptional.com
  */
 
-/// A type that encapsulates error info
+/// A type that encapsulates context about an error
 class ErrorEnvelope {
   /// Unknown error
   static const unknown = ErrorEnvelope(1024, "未知错误");

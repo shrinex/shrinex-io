@@ -10,9 +10,11 @@ import 'package:rxdart/rxdart.dart';
 import 'package:shrinex_io/src/bearer_token.dart';
 import 'package:shrinex_io/src/error_envelope.dart';
 import 'package:shrinex_io/src/http_request.dart';
+import 'package:shrinex_io/src/http_response.dart';
 import 'package:shrinex_io/src/server_options.dart';
+import 'package:shrinex_io/src/types.dart';
 
-/// A type that knows how to fetch ShrineX data.
+/// A type that knows how to fetch ShrineX data
 abstract class Service {
   /// Used to authenticate ShrineX api
   BearerToken? get bearerToken;
@@ -24,6 +26,7 @@ abstract class Service {
     var options = BaseOptions(
       baseUrl: serverOptions.baseUrl,
       responseType: ResponseType.json,
+      validateStatus: (status) => true,
       receiveDataWhenStatusError: true,
       contentType: Headers.jsonContentType,
       receiveTimeout: serverOptions.readTimeout,
@@ -42,7 +45,7 @@ abstract class Service {
         serverOptions: serverOptions,
       );
 
-  /// Returns a new service with the Service token replaced
+  /// Returns a new service with the [Service] token replaced
   Service login(BearerToken bearerToken) {
     return Service.using(
       bearerToken: bearerToken,
@@ -57,12 +60,34 @@ abstract class Service {
       serverOptions: serverOptions,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is Service &&
+        other.bearerToken == bearerToken &&
+        other.serverOptions == serverOptions;
+  }
+
+  @override
+  int get hashCode => (bearerToken?.hashCode ?? 7) ^ serverOptions.hashCode;
 }
 
 /// Reactive extension for [Service]
 extension ReactiveX on Service {
-  /// Entry point for making HTTP request, returns a cold but broadcast stream
-  Stream<Map<String, dynamic>> observe(HttpRequest request) {
+  /// Entry point for making HTTP request
+  /// Once called, the method returns a cold but broadcast stream
+  Stream<Map<String, dynamic>> observe(
+    HttpRequest request, {
+    RequestCallback requestCallback = defaultRequestCallback,
+    ResponseErrorHandler responseErrorHandler = defaultResponseErrorHandler,
+  }) {
+    requestCallback(request);
     final options = RequestOptions(
       path: request.path,
       data: request.body,
@@ -71,6 +96,7 @@ extension ReactiveX on Service {
       queryParameters: request.queryParams,
       responseType: _restClient.options.responseType,
       contentType: _restClient.options.contentType,
+      validateStatus: _restClient.options.validateStatus,
       baseUrl: request.baseUrl ?? _restClient.options.baseUrl,
       receiveTimeout: request.readTimeout ?? _restClient.options.receiveTimeout,
       connectTimeout:
@@ -83,18 +109,19 @@ extension ReactiveX on Service {
         return Stream.fromFuture(() async {
           try {
             final response =
-                await _restClient.fetch<Map<String, dynamic>>(options);
-            if (response.data == null) {
-              return Future<Map<String, dynamic>>.error(_missingResponseBody);
+                (await _restClient.fetch<Map<String, dynamic>>(options))
+                    .asHttpResponse();
+            if (responseErrorHandler.hasError(response)) {
+              return responseErrorHandler.handleError(request, response);
             }
-            return Future.value(response.data!);
+            return Future.value(response.body! as Map<String, dynamic>);
           } on DioError catch (err) {
             return _handleError(err);
           }
         }());
       },
       reusable: true,
-    ).distinct();
+    );
   }
 
   Future<Map<String, dynamic>> _handleError(DioError err) {
@@ -109,7 +136,7 @@ extension ReactiveX on Service {
           err.response?.statusMessage ?? ErrorEnvelope.unknown.message,
         ));
       default:
-        return Future.error(ErrorEnvelope.unknown);
+        return Future.error(ErrorEnvelope(12592, err.message));
     }
   }
 }
@@ -127,5 +154,4 @@ class _Service with Service {
   });
 }
 
-const _missingResponseBody = ErrorEnvelope(12590, "Missing response body");
 const _cannotConnectToHost = ErrorEnvelope(12591, "Cannot connect to host");

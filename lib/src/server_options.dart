@@ -26,7 +26,7 @@ enum Kind implements SelfDescribing, RawEnum<int> {
   );
 }
 
-/// A type that knows the location of a ShrineX API
+/// A type that knows the location of ShrineX API
 abstract class ServerOptions {
   /// Current environment kind
   Kind get kind;
@@ -34,10 +34,10 @@ abstract class ServerOptions {
   /// Base url for HTTP request
   String get baseUrl;
 
-  /// How long should we receive response from server
+  /// How long should we wait before receiving a reply
   int get readTimeout;
 
-  /// How long should we connect to server
+  /// How long should we wait before connecting to server
   int get connectTimeout;
 
   factory ServerOptions(
