@@ -5,9 +5,32 @@
  * Home: http://anyoptional.com
  */
 
+import 'package:dio/dio.dart';
 import 'package:shrinex_io/src/error_envelope.dart';
 import 'package:shrinex_io/src/http_request.dart';
 import 'package:shrinex_io/src/http_response.dart';
+
+/// Strategy handler used to adapt [Exception] to [ErrorEnvelope]
+typedef ExceptionHandler = ErrorEnvelope Function(Exception);
+
+ErrorEnvelope defaultExceptionHandler(Exception ex) {
+  if (ex is DioError) {
+    switch (ex.type) {
+      case DioErrorType.sendTimeout:
+      case DioErrorType.connectTimeout:
+      case DioErrorType.receiveTimeout:
+        return _cannotConnectToHost;
+      case DioErrorType.response:
+        return ErrorEnvelope(
+          ex.response?.statusCode ?? ErrorEnvelope.unknown.code,
+          ex.response?.statusMessage ?? ErrorEnvelope.unknown.message,
+        );
+      default:
+        return ErrorEnvelope(12592, ex.message);
+    }
+  }
+  return ErrorEnvelope.unknown;
+}
 
 /// Callback for code that operates on a [HttpRequest]
 /// Allows manipulating the request headers, and write to the request body
@@ -22,8 +45,7 @@ abstract class ResponseErrorHandler {
   bool hasError(HttpResponse response);
 
   /// Handle the error in the given request-response pair
-  Future<Map<String, dynamic>> handleError(
-      HttpRequest request, HttpResponse response);
+  ErrorEnvelope handleError(HttpRequest request, HttpResponse response);
 }
 
 const defaultResponseErrorHandler = _ResponseErrorHandler();
@@ -45,21 +67,21 @@ class _ResponseErrorHandler implements ResponseErrorHandler {
   }
 
   @override
-  Future<Map<String, dynamic>> handleError(
-      HttpRequest request, HttpResponse response) {
+  ErrorEnvelope handleError(HttpRequest request, HttpResponse response) {
     if (response.body == null) {
-      return Future.error(_missingResponseBody);
+      return _missingResponseBody;
     }
     if (response.statusCode == null ||
         response.statusCode! < 200 ||
         response.statusCode! >= 300) {
-      return Future.error(ErrorEnvelope(
+      return ErrorEnvelope(
         response.statusCode ?? ErrorEnvelope.unknown.code,
         response.statusMessage ?? ErrorEnvelope.unknown.message,
-      ));
+      );
     }
-    return Future.error(ErrorEnvelope.unknown);
+    return ErrorEnvelope.unknown;
   }
 }
 
 const _missingResponseBody = ErrorEnvelope(12590, "Missing response body");
+const _cannotConnectToHost = ErrorEnvelope(12591, "Cannot connect to host");

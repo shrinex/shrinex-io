@@ -8,7 +8,6 @@
 import 'package:dio/dio.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shrinex_io/src/bearer_token.dart';
-import 'package:shrinex_io/src/error_envelope.dart';
 import 'package:shrinex_io/src/http_request.dart';
 import 'package:shrinex_io/src/http_response.dart';
 import 'package:shrinex_io/src/server_options.dart';
@@ -85,6 +84,7 @@ extension ReactiveX on Service {
   Stream<Map<String, dynamic>> observe(
     HttpRequest request, {
     RequestCallback requestCallback = defaultRequestCallback,
+    ExceptionHandler exceptionHandler = defaultExceptionHandler,
     ResponseErrorHandler responseErrorHandler = defaultResponseErrorHandler,
   }) {
     requestCallback(request);
@@ -112,32 +112,17 @@ extension ReactiveX on Service {
                 (await _restClient.fetch<Map<String, dynamic>>(options))
                     .asHttpResponse();
             if (responseErrorHandler.hasError(response)) {
-              return responseErrorHandler.handleError(request, response);
+              return Future<Map<String, dynamic>>.error(
+                  responseErrorHandler.handleError(request, response));
             }
-            return Future.value(response.body! as Map<String, dynamic>);
-          } on DioError catch (err) {
-            return _handleError(err);
+            return Future<Map<String, dynamic>>.value(response.body!);
+          } on Exception catch (ex) {
+            return Future<Map<String, dynamic>>.error(exceptionHandler(ex));
           }
         }());
       },
       reusable: true,
     );
-  }
-
-  Future<Map<String, dynamic>> _handleError(DioError err) {
-    switch (err.type) {
-      case DioErrorType.sendTimeout:
-      case DioErrorType.connectTimeout:
-      case DioErrorType.receiveTimeout:
-        return Future.error(_cannotConnectToHost);
-      case DioErrorType.response:
-        return Future.error(ErrorEnvelope(
-          err.response?.statusCode ?? ErrorEnvelope.unknown.code,
-          err.response?.statusMessage ?? ErrorEnvelope.unknown.message,
-        ));
-      default:
-        return Future.error(ErrorEnvelope(12592, err.message));
-    }
   }
 }
 
@@ -153,5 +138,3 @@ class _Service with Service {
     required this.serverOptions,
   });
 }
-
-const _cannotConnectToHost = ErrorEnvelope(12591, "Cannot connect to host");
