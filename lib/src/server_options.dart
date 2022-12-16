@@ -5,32 +5,8 @@
  * Home: http://anyoptional.com
  */
 
-import 'package:shrinex_core/shrinex_core.dart';
-
-/// Represents environment kind
-enum Kind implements SelfDescribing, RawEnum<int> {
-  dev(1, "开发环境"),
-  prod(2, "生产环境"),
-  local(3, "本地环境"),
-  ;
-
-  @override
-  final int rawValue;
-
-  @override
-  final String description;
-
-  const Kind(
-    this.rawValue,
-    this.description,
-  );
-}
-
 /// A type that knows the location of ShrineX API
 abstract class ServerOptions {
-  /// Current environment kind
-  Kind get kind;
-
   /// Base url for HTTP request
   String get baseUrl;
 
@@ -41,13 +17,11 @@ abstract class ServerOptions {
   int get connectTimeout;
 
   factory ServerOptions(
-    Kind kind,
     String baseUrl, {
     int readTimeout = 5000,
     int connectTimeout = 2000,
   }) =>
       _ServerOptions(
-        kind,
         baseUrl,
         readTimeout,
         connectTimeout,
@@ -62,7 +36,6 @@ abstract class ServerOptions {
       return false;
     }
     return other is ServerOptions &&
-        other.kind == kind &&
         other.baseUrl == baseUrl &&
         other.readTimeout == readTimeout &&
         other.connectTimeout == connectTimeout;
@@ -70,7 +43,6 @@ abstract class ServerOptions {
 
   @override
   int get hashCode => Object.hash(
-        kind,
         baseUrl,
         readTimeout,
         connectTimeout,
@@ -78,9 +50,6 @@ abstract class ServerOptions {
 }
 
 class _ServerOptions with ServerOptions {
-  @override
-  final Kind kind;
-
   @override
   final String baseUrl;
 
@@ -91,7 +60,6 @@ class _ServerOptions with ServerOptions {
   final int connectTimeout;
 
   const _ServerOptions(
-    this.kind,
     this.baseUrl,
     this.readTimeout,
     this.connectTimeout,

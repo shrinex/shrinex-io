@@ -5,8 +5,8 @@
  * Home: http://anyoptional.com
  */
 
-/// Defines common part for a client HTTP request
-mixin HttpMessage {
+/// Defines common part for client HTTP request & response
+abstract class HttpMessage {
   /// HTTP headers
   Map<String, List<String>> get headers => {};
 }

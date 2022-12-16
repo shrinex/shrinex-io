@@ -6,16 +6,16 @@
  */
 
 import 'package:dio/dio.dart';
-import 'package:shrinex_io/src/http_message.dart';
+import 'package:shrinex_io/src/http/http_message.dart';
 
 /// Encapsulates response body
-mixin HttpInputMessage on HttpMessage {
+abstract class HttpInputMessage extends HttpMessage {
   /// Response body, null by default
   dynamic get body => null;
 }
 
 /// A type that represents a client HTTP response
-mixin HttpResponse on HttpInputMessage {
+abstract class HttpResponse extends HttpInputMessage {
   /// Status code
   int? get statusCode => null;
 

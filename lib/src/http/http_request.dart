@@ -5,18 +5,18 @@
  * Home: http://anyoptional.com
  */
 
-import 'package:shrinex_io/src/http_message.dart';
-import 'package:shrinex_io/src/http_method.dart';
+import 'package:shrinex_io/src/http/http_message.dart';
+import 'package:shrinex_io/src/http/http_method.dart';
 import 'package:shrinex_io/src/server_options.dart';
 
 /// Encapsulates request body
-mixin HttpOutputMessage on HttpMessage {
+abstract class HttpOutputMessage extends HttpMessage {
   /// Request body, null by default
   dynamic get body => null;
 }
 
 /// A type that represents a client HTTP request
-mixin HttpRequest on HttpOutputMessage {
+abstract class HttpRequest extends HttpOutputMessage {
   /// Request path
   String get path;
 

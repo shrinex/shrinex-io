@@ -1,5 +1,5 @@
 name: shrinex_io
-description: A thin wrapper around dio.
+description: A thin wrapper around dio, inspired by Spring-Web.
 version: 0.0.1+1
 homepage: https://github.com/shrinex/shrinex-io
 
@@ -23,3 +23,5 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  build_runner: ^2.3.2
+  mockito: ^5.3.2

@@ -7,10 +7,11 @@
 
 import 'package:dio/dio.dart';
 import 'package:shrinex_io/src/error_envelope.dart';
-import 'package:shrinex_io/src/http_request.dart';
-import 'package:shrinex_io/src/http_response.dart';
+import 'package:shrinex_io/src/http/http_request.dart';
+import 'package:shrinex_io/src/http/http_response.dart';
+import 'package:shrinex_io/src/smart_json.dart';
 
-/// Strategy handler used to adapt [Exception] to [ErrorEnvelope]
+/// Strategy handler method used to adapt [Exception] to [ErrorEnvelope]
 typedef ExceptionHandler = ErrorEnvelope Function(Exception);
 
 ErrorEnvelope defaultExceptionHandler(Exception ex) {
@@ -32,11 +33,11 @@ ErrorEnvelope defaultExceptionHandler(Exception ex) {
   return ErrorEnvelope.unknown;
 }
 
-/// Callback for code that operates on a [HttpRequest]
+/// Handler method for code that operates on a [HttpRequest]
 /// Allows manipulating the request headers, and write to the request body
-typedef RequestCallback = void Function(HttpRequest);
+typedef RequestHandler = HttpRequest Function(HttpRequest);
 
-void defaultRequestCallback(HttpRequest request) {}
+HttpRequest defaultRequestHandler(HttpRequest request) => request;
 
 /// Strategy interface used by the [Service] to determine
 /// whether a particular response has an error or not
@@ -58,11 +59,19 @@ class _ResponseErrorHandler implements ResponseErrorHandler {
     if (response.body == null) {
       return true;
     }
+
     if (response.statusCode == null ||
         response.statusCode! < 200 ||
         response.statusCode! >= 300) {
       return true;
     }
+
+    // {"code" : 200, "message" : "ok", "data" : {...}}
+    final json = JSON.from(response.body);
+    if (json[_responseBodyCodeKey].integerValue != 200) {
+      return true;
+    }
+
     return false;
   }
 
@@ -71,6 +80,7 @@ class _ResponseErrorHandler implements ResponseErrorHandler {
     if (response.body == null) {
       return _missingResponseBody;
     }
+
     if (response.statusCode == null ||
         response.statusCode! < 200 ||
         response.statusCode! >= 300) {
@@ -79,9 +89,16 @@ class _ResponseErrorHandler implements ResponseErrorHandler {
         response.statusMessage ?? ErrorEnvelope.unknown.message,
       );
     }
-    return ErrorEnvelope.unknown;
+
+    final json = JSON.from(response.body);
+    return ErrorEnvelope(
+      json[_responseBodyCodeKey].integer ?? ErrorEnvelope.unknown.code,
+      json[_responseBodyMessageKey].string ?? ErrorEnvelope.unknown.message,
+    );
   }
 }
 
+const _responseBodyCodeKey = "code";
+const _responseBodyMessageKey = "message";
 const _missingResponseBody = ErrorEnvelope(12590, "Missing response body");
-const _cannotConnectToHost = ErrorEnvelope(12591, "Cannot connect to host");
+const _cannotConnectToHost = ErrorEnvelope(12591, "Cannot connect to the host");

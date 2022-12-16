@@ -1,1 +1,1 @@
-A thin wrapper around dio.
+A thin wrapper around dio, inspired by Spring-Web.
