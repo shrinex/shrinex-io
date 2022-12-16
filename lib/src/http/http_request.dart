@@ -77,7 +77,7 @@ class ClientHttpRequest implements HttpRequest {
     this.connectTimeout,
     required this.path,
     required this.method,
-    required this.headers,
-    required this.queryParams,
+    this.headers = const {},
+    this.queryParams = const {},
   });
 }
