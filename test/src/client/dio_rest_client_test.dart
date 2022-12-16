@@ -9,9 +9,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shrinex_io/src/client/dio_rest_client.dart';
+import 'package:shrinex_io/src/client/rest_options.dart';
 import 'package:shrinex_io/src/http/http_method.dart';
 import 'package:shrinex_io/src/http/http_request.dart';
-import 'package:shrinex_io/src/server_options.dart';
 
 import '../mocks/types.mocks.dart';
 
@@ -28,18 +28,18 @@ void main() {
     "DioRestClient.execute() calls Dio.fetch()",
     () async {
       final dio = MockDio();
-      final serverOptions = ServerOptions(
+      final restOptions = RestOptions(
         "https://example.com",
       );
       final client = DioRestClient(
         restClient: dio,
-        serverOptions: serverOptions,
+        restOptions: restOptions,
       );
 
       // expect
       when(dio.options).thenReturn(
         BaseOptions(
-          baseUrl: serverOptions.baseUrl,
+          baseUrl: restOptions.baseUrl,
         ),
       );
       when(dio.fetch(argThat(const TypeMatcher<RequestOptions>()))).thenAnswer(

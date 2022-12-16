@@ -9,7 +9,6 @@ import 'package:rxdart/rxdart.dart';
 import 'package:shrinex_io/src/client/auth/bearer_token.dart';
 import 'package:shrinex_io/src/client/rest_client.dart';
 import 'package:shrinex_io/src/http/http_request.dart';
-import 'package:shrinex_io/src/server_options.dart';
 import 'package:shrinex_io/src/servicex.dart';
 
 /// A type that knows how to fetch ShrineX data
@@ -20,19 +19,14 @@ abstract class Service {
   /// Used to authenticate ShrineX api
   BearerToken? get bearerToken;
 
-  /// The [ServerOptions] associated with this [Service]
-  ServerOptions get serverOptions;
-
   /// Factory method that helps create [Service] instance
   factory Service.using({
     BearerToken? bearerToken,
     required RestClient restClient,
-    required ServerOptions serverOptions,
   }) =>
       _Service(
         restClient: restClient,
         bearerToken: bearerToken,
-        serverOptions: serverOptions,
       );
 
   @override
@@ -45,15 +39,11 @@ abstract class Service {
     }
     return other is Service &&
         other.restClient == restClient &&
-        other.bearerToken == bearerToken &&
-        other.serverOptions == serverOptions;
+        other.bearerToken == bearerToken;
   }
 
   @override
-  int get hashCode =>
-      (bearerToken?.hashCode ?? 7) ^
-      serverOptions.hashCode ^
-      restClient.hashCode;
+  int get hashCode => (bearerToken?.hashCode ?? 7) ^ restClient.hashCode;
 }
 
 /// Reactive extension for [Service]
@@ -93,7 +83,6 @@ extension ShrinexSessionApi on Service {
     return Service.using(
       restClient: restClient,
       bearerToken: bearerToken,
-      serverOptions: serverOptions,
     );
   }
 
@@ -102,7 +91,6 @@ extension ShrinexSessionApi on Service {
     return Service.using(
       bearerToken: null,
       restClient: restClient,
-      serverOptions: serverOptions,
     );
   }
 }
@@ -114,12 +102,8 @@ class _Service with Service {
   @override
   final BearerToken? bearerToken;
 
-  @override
-  final ServerOptions serverOptions;
-
   _Service({
     this.bearerToken,
     required this.restClient,
-    required this.serverOptions,
   });
 }

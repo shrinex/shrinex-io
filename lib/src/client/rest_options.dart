@@ -6,7 +6,7 @@
  */
 
 /// A type that knows the location of ShrineX API
-abstract class ServerOptions {
+abstract class RestOptions {
   /// Base url for HTTP request
   String get baseUrl;
 
@@ -16,12 +16,12 @@ abstract class ServerOptions {
   /// How long should we wait before connecting to server
   int get connectTimeout;
 
-  factory ServerOptions(
+  factory RestOptions(
     String baseUrl, {
     int readTimeout = 5000,
     int connectTimeout = 2000,
   }) =>
-      _ServerOptions(
+      _RestOptions(
         baseUrl,
         readTimeout,
         connectTimeout,
@@ -35,7 +35,7 @@ abstract class ServerOptions {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is ServerOptions &&
+    return other is RestOptions &&
         other.baseUrl == baseUrl &&
         other.readTimeout == readTimeout &&
         other.connectTimeout == connectTimeout;
@@ -49,7 +49,7 @@ abstract class ServerOptions {
       );
 }
 
-class _ServerOptions with ServerOptions {
+class _RestOptions with RestOptions {
   @override
   final String baseUrl;
 
@@ -59,7 +59,7 @@ class _ServerOptions with ServerOptions {
   @override
   final int connectTimeout;
 
-  const _ServerOptions(
+  const _RestOptions(
     this.baseUrl,
     this.readTimeout,
     this.connectTimeout,

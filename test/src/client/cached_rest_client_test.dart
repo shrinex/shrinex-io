@@ -8,7 +8,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shrinex_io/src/client/dio_rest_client_factory.dart';
 import 'package:shrinex_io/src/client/rest_client_factory.dart';
-import 'package:shrinex_io/src/server_options.dart';
+import 'package:shrinex_io/src/client/rest_options.dart';
 
 void main() {
   test(
@@ -16,7 +16,7 @@ void main() {
     () {
       final factory = CachedRestClientFactory(
         DioRestClientFactory(
-          ServerOptions(
+          RestOptions(
             "https://api.github.com/users",
           ),
         ),

@@ -8,27 +8,27 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shrinex_io/src/client/rest_client.dart';
+import 'package:shrinex_io/src/client/rest_options.dart';
 import 'package:shrinex_io/src/http/http_request.dart';
 import 'package:shrinex_io/src/http/http_response.dart';
-import 'package:shrinex_io/src/server_options.dart';
 
 class DioRestClient implements RestClient {
   final Dio _restClient;
 
-  final ServerOptions serverOptions;
+  final RestOptions restOptions;
 
   factory DioRestClient.using(
-    ServerOptions serverOptions,
+    RestOptions restOptions,
   ) =>
       DioRestClient(
-        serverOptions: serverOptions,
-        restClient: _newDio(serverOptions),
+        restOptions: restOptions,
+        restClient: _newDio(restOptions),
       );
 
   @visibleForTesting
   DioRestClient({
     required Dio restClient,
-    required this.serverOptions,
+    required this.restOptions,
   }) : _restClient = restClient;
 
   @override
@@ -62,15 +62,15 @@ class DioRestClient implements RestClient {
   @override
   int get hashCode => _restClient.hashCode;
 
-  static Dio _newDio(ServerOptions serverOptions) {
+  static Dio _newDio(RestOptions restOptions) {
     var options = BaseOptions(
-      baseUrl: serverOptions.baseUrl,
+      baseUrl: restOptions.baseUrl,
       responseType: ResponseType.json,
       validateStatus: (status) => true,
       receiveDataWhenStatusError: true,
       contentType: Headers.jsonContentType,
-      receiveTimeout: serverOptions.readTimeout,
-      connectTimeout: serverOptions.connectTimeout,
+      receiveTimeout: restOptions.readTimeout,
+      connectTimeout: restOptions.connectTimeout,
     );
     return Dio(options);
   }

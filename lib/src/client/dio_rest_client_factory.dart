@@ -8,15 +8,15 @@
 import 'package:shrinex_io/src/client/dio_rest_client.dart';
 import 'package:shrinex_io/src/client/rest_client.dart';
 import 'package:shrinex_io/src/client/rest_client_factory.dart';
-import 'package:shrinex_io/src/server_options.dart';
+import 'package:shrinex_io/src/client/rest_options.dart';
 
 class DioRestClientFactory implements RestClientFactory {
-  final ServerOptions serverOptions;
+  final RestOptions restOptions;
 
-  const DioRestClientFactory(this.serverOptions);
+  const DioRestClientFactory(this.restOptions);
 
   @override
   T createRestClient<T extends RestClient>() {
-    return DioRestClient.using(serverOptions) as T;
+    return DioRestClient.using(restOptions) as T;
   }
 }

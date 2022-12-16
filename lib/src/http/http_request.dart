@@ -5,9 +5,9 @@
  * Home: http://anyoptional.com
  */
 
+import 'package:shrinex_io/src/client/rest_options.dart';
 import 'package:shrinex_io/src/http/http_message.dart';
 import 'package:shrinex_io/src/http/http_method.dart';
-import 'package:shrinex_io/src/server_options.dart';
 
 /// Encapsulates request body
 abstract class HttpOutputMessage extends HttpMessage {
@@ -23,13 +23,13 @@ abstract class HttpRequest extends HttpOutputMessage {
   /// Request method
   HttpMethod get method;
 
-  /// Optional base url, overrides [ServerOptions.baseUrl] if present
+  /// Optional base url, overrides [RestOptions.baseUrl] if present
   String? get baseUrl => null;
 
-  /// Optional read timeout, overrides [ServerOptions.readTimeout] if present
+  /// Optional read timeout, overrides [RestOptions.readTimeout] if present
   int? get readTimeout => null;
 
-  /// Optional connect timeout, overrides [ServerOptions.connectTimeout] if present
+  /// Optional connect timeout, overrides [RestOptions.connectTimeout] if present
   int? get connectTimeout => null;
 
   /// Query parameters
