@@ -12,6 +12,10 @@ import 'package:shrinex_io/src/http/http_message.dart';
 abstract class HttpInputMessage extends HttpMessage {
   /// Response body, null by default
   dynamic get body => null;
+
+  /// This constructor enables subclasses to provide
+  /// const constructors so that they can be used in const expressions
+  const HttpInputMessage();
 }
 
 /// A type that represents a client HTTP response
@@ -21,6 +25,10 @@ abstract class HttpResponse extends HttpInputMessage {
 
   /// Status message
   String? get statusMessage => null;
+
+  /// This constructor enables subclasses to provide
+  /// const constructors so that they can be used in const expressions
+  const HttpResponse();
 }
 
 class _HttpResponse implements HttpResponse {

@@ -9,4 +9,8 @@
 abstract class HttpMessage {
   /// HTTP headers
   Map<String, List<String>> get headers => {};
+
+  /// This constructor enables subclasses to provide
+  /// const constructors so that they can be used in const expressions
+  const HttpMessage();
 }
