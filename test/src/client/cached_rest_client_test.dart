@@ -15,9 +15,9 @@ void main() {
     "CachedRestClientFactory.createRestClient() always returns the same object",
     () {
       final factory = CachedRestClientFactory(
-        DioRestClientFactory(
-          RestOptions(
-            "https://api.github.com/users",
+        delegate: DioRestClientFactory(
+          restOptions: RestOptions(
+            baseUrl: "https://api.github.com/users",
           ),
         ),
       );

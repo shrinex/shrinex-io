@@ -29,7 +29,7 @@ void main() {
     () async {
       final dio = MockDio();
       final restOptions = RestOptions(
-        "https://example.com",
+        baseUrl: "https://example.com",
       );
       final client = DioRestClient(
         restClient: dio,

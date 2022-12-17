@@ -20,14 +20,14 @@ ErrorEnvelope defaultExceptionHandler(Exception ex) {
       case DioErrorType.sendTimeout:
       case DioErrorType.connectTimeout:
       case DioErrorType.receiveTimeout:
-        return _cannotConnectToHost;
+        return _kErrCannotConnectToHost;
       case DioErrorType.response:
         return ErrorEnvelope(
-          ex.response?.statusCode ?? ErrorEnvelope.unknown.code,
-          ex.response?.statusMessage ?? ErrorEnvelope.unknown.message,
+          code: ex.response?.statusCode ?? ErrorEnvelope.unknown.code,
+          message: ex.response?.statusMessage ?? ErrorEnvelope.unknown.message,
         );
       default:
-        return ErrorEnvelope(12592, ex.message);
+        return ErrorEnvelope(code: -2, message: ex.message);
     }
   }
   return ErrorEnvelope.unknown;
@@ -68,7 +68,7 @@ class _ResponseErrorHandler implements ResponseErrorHandler {
 
     // {"code" : 200, "message" : "ok", "data" : {...}}
     final json = JSON.from(response.body);
-    if (json[_responseBodyCodeKey].integerValue != 200) {
+    if (json[_kCodeKey].integerValue != 200) {
       return true;
     }
 
@@ -78,27 +78,33 @@ class _ResponseErrorHandler implements ResponseErrorHandler {
   @override
   ErrorEnvelope handleError(HttpRequest request, HttpResponse response) {
     if (response.body == null) {
-      return _missingResponseBody;
+      return _kErrMissingResponseBody;
     }
 
     if (response.statusCode == null ||
         response.statusCode! < 200 ||
         response.statusCode! >= 300) {
       return ErrorEnvelope(
-        response.statusCode ?? ErrorEnvelope.unknown.code,
-        response.statusMessage ?? ErrorEnvelope.unknown.message,
+        code: response.statusCode ?? ErrorEnvelope.unknown.code,
+        message: response.statusMessage ?? ErrorEnvelope.unknown.message,
       );
     }
 
     final json = JSON.from(response.body);
     return ErrorEnvelope(
-      json[_responseBodyCodeKey].integer ?? ErrorEnvelope.unknown.code,
-      json[_responseBodyMessageKey].string ?? ErrorEnvelope.unknown.message,
+      code: json[_kCodeKey].integer ?? ErrorEnvelope.unknown.code,
+      message: json[_kMessageKey].string ?? ErrorEnvelope.unknown.message,
     );
   }
 }
 
-const _responseBodyCodeKey = "code";
-const _responseBodyMessageKey = "message";
-const _missingResponseBody = ErrorEnvelope(12590, "Missing response body");
-const _cannotConnectToHost = ErrorEnvelope(12591, "Cannot connect to the host");
+const _kCodeKey = "code";
+const _kMessageKey = "message";
+const _kErrMissingResponseBody = ErrorEnvelope(
+  code: -3,
+  message: "Missing response body",
+);
+const _kErrCannotConnectToHost = ErrorEnvelope(
+  code: -4,
+  message: "Cannot connect to the host",
+);

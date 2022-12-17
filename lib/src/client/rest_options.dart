@@ -16,8 +16,8 @@ abstract class RestOptions {
   /// How long should we wait before connecting to server
   int get connectTimeout;
 
-  factory RestOptions(
-    String baseUrl, {
+  factory RestOptions({
+    required String baseUrl,
     int readTimeout = 5000,
     int connectTimeout = 2000,
   }) =>

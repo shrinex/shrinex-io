@@ -18,17 +18,17 @@ class CachedRestClientFactory implements RestClientFactory {
 
   final RestClientFactory delegate;
 
-  CachedRestClientFactory(this.delegate);
+  CachedRestClientFactory({required this.delegate});
 
   @override
   T createRestClient<T extends RestClient>() {
     return (_restClient ??= delegate.createRestClient()) as T;
   }
 
-  static RestClientFactory wrapIfPossible(RestClientFactory factory) {
-    if (factory is CachedRestClientFactory) {
-      return factory;
+  static RestClientFactory wrapIfPossible(RestClientFactory delegate) {
+    if (delegate is CachedRestClientFactory) {
+      return delegate;
     }
-    return CachedRestClientFactory(factory);
+    return CachedRestClientFactory(delegate: delegate);
   }
 }

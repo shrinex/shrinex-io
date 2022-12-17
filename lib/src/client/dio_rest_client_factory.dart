@@ -13,10 +13,12 @@ import 'package:shrinex_io/src/client/rest_options.dart';
 class DioRestClientFactory implements RestClientFactory {
   final RestOptions restOptions;
 
-  const DioRestClientFactory(this.restOptions);
+  const DioRestClientFactory({
+    required this.restOptions,
+  });
 
   @override
   T createRestClient<T extends RestClient>() {
-    return DioRestClient.using(restOptions) as T;
+    return DioRestClient.using(restOptions: restOptions) as T;
   }
 }

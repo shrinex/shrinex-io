@@ -17,9 +17,9 @@ class DioRestClient implements RestClient {
 
   final RestOptions restOptions;
 
-  factory DioRestClient.using(
-    RestOptions restOptions,
-  ) =>
+  factory DioRestClient.using({
+    required RestOptions restOptions,
+  }) =>
       DioRestClient(
         restOptions: restOptions,
         restClient: _newDio(restOptions),
